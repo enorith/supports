@@ -37,3 +37,11 @@ func RandString(n int) string {
 
 	return *(*string)(unsafe.Pointer(&b))
 }
+
+func ReplaceVar(str string, vars map[string]string) string {
+	for k, v := range vars {
+		str = strings.ReplaceAll(str, ":" + k, v)
+	}
+
+	return str
+}
