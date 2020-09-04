@@ -3,6 +3,7 @@ package byt
 import (
 	"bytes"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -58,4 +59,20 @@ func RandBytes(n int) []byte {
 	}
 
 	return b
+}
+
+func ToString(b []byte) string {
+	return string(b)
+}
+
+func ToUint64(b []byte) (uint64, error) {
+	str := ToString(b)
+
+	return strconv.ParseUint(str, 10, 64)
+}
+
+func ToInt64(b []byte) (int64, error) {
+	str := ToString(b)
+
+	return strconv.ParseInt(str, 10, 64)
 }
