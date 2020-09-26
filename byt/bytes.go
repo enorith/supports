@@ -76,3 +76,9 @@ func ToInt64(b []byte) (int64, error) {
 
 	return strconv.ParseInt(str, 10, 64)
 }
+
+func ToBool(b []byte) (bool, error) {
+	str := ToString(b)
+
+	return strconv.ParseBool(str)
+}
