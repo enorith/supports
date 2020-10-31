@@ -82,3 +82,9 @@ func ToBool(b []byte) (bool, error) {
 
 	return strconv.ParseBool(str)
 }
+
+func ToFloat64(b []byte) (float64, error) {
+	str := ToString(b)
+
+	return strconv.ParseFloat(str, 64)
+}
