@@ -13,7 +13,7 @@ func StructType(v interface{}) reflect.Type {
 
 func StructValue(v interface{}) reflect.Value {
 	va := ValueOf(v)
-	if va.Kind() == reflect.Ptr {
+	if va.Kind() == reflect.Ptr && !va.IsNil() {
 		return va.Elem()
 	}
 
@@ -47,4 +47,20 @@ func ValueOf(v interface{}) reflect.Value {
 	}
 
 	return reflect.ValueOf(v)
+}
+
+func SubStructOf(child, parent interface{}) int {
+	ct := StructType(child)
+	pt := StructType(parent)
+
+	if ct.Kind() == reflect.Struct {
+		for i := 0; i < ct.NumField(); i++ {
+			field := ct.Field(i)
+			if field.Anonymous && StructType(field.Type) == pt {
+				return i
+			}
+		}
+	}
+
+	return -1
 }
