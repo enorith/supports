@@ -166,6 +166,15 @@ func (c *Carbon) Clone() *Carbon {
 	return NewCarbon(c.t)
 }
 
+func (c *Carbon) Scan(src interface{}) (e error) {
+	if bv, ok := src.([]byte); ok {
+		c.t, e = time.Parse(DefaultDateTimeFormat, string(bv))
+		return
+	}
+
+	return
+}
+
 ////////////////////////
 //  Public functions  //
 ////////////////////////
