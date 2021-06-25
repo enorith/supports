@@ -194,11 +194,11 @@ func (c Carbon) Value() (driver.Value, error) {
 //  Public functions  //
 ////////////////////////
 
-func NowCarbon(tz ...*time.Location) *Carbon {
-	return NewCarbon(time.Now(), tz...)
+func Now(tz ...*time.Location) *Carbon {
+	return New(time.Now(), tz...)
 }
 
-func NewCarbon(t time.Time, tz ...*time.Location) *Carbon {
+func New(t time.Time, tz ...*time.Location) *Carbon {
 	if len(tz) > 0 && tz[0] != nil {
 		t.In(tz[0])
 	} else {
@@ -217,16 +217,16 @@ func Parse(value string, tz *time.Location, layout ...string) (*Carbon, error) {
 	for _, v := range layout {
 		ti, err := time.Parse(v, value)
 		if err == nil {
-			return NewCarbon(ti, tz), nil
+			return New(ti, tz), nil
 		}
 	}
 	return nil, errors.New("can not parse value to carbon")
 }
 
 func TodayCarbon() *Carbon {
-	return NowCarbon().StartOfDay()
+	return Now().StartOfDay()
 }
 
 func TomorrowCarbon() *Carbon {
-	return NowCarbon().AddDay().StartOfDay()
+	return Now().AddDay().StartOfDay()
 }
