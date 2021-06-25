@@ -223,10 +223,10 @@ func Parse(value string, tz *time.Location, layout ...string) (*Carbon, error) {
 	return nil, errors.New("can not parse value to carbon")
 }
 
-func TodayCarbon() *Carbon {
+func Today() *Carbon {
 	return Now().StartOfDay()
 }
 
-func TomorrowCarbon() *Carbon {
+func Tomorrow() *Carbon {
 	return Now().AddDay().StartOfDay()
 }
