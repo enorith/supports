@@ -1,6 +1,7 @@
 package carbon
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"time"
@@ -173,6 +174,10 @@ func (c *Carbon) Scan(src interface{}) (e error) {
 	}
 
 	return
+}
+
+func (c Carbon) Value() (driver.Value, error) {
+	return c.GetDateTimeString(), nil
 }
 
 ////////////////////////
