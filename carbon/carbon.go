@@ -173,6 +173,11 @@ func (c *Carbon) Scan(src interface{}) (e error) {
 		return
 	}
 
+	if ti, ok := src.(time.Time); ok {
+		c.t = ti
+		return
+	}
+
 	return
 }
 
