@@ -164,7 +164,7 @@ func (c *Carbon) Add(sec time.Duration) *Carbon {
 }
 
 func (c *Carbon) Clone() *Carbon {
-	return NewCarbon(c.t)
+	return New(c.t)
 }
 
 func (c *Carbon) Scan(src interface{}) (e error) {
