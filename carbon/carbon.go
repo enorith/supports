@@ -173,6 +173,11 @@ func (c *Carbon) Scan(src interface{}) (e error) {
 		return
 	}
 
+	if sv, ok := src.(string); ok {
+		c.t, e = time.Parse(DefaultDateTimeFormat, sv)
+		return
+	}
+
 	if ti, ok := src.(time.Time); ok {
 		c.t = ti
 		return
