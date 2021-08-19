@@ -64,3 +64,8 @@ func SubStructOf(child, parent interface{}) int {
 
 	return -1
 }
+
+func Implements(abs interface{}, of reflect.Type) bool {
+	t := TypeOf(abs)
+	return t.Implements(of)
+}
