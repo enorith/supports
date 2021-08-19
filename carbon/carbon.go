@@ -15,10 +15,11 @@ var (
 )
 
 type Carbon struct {
-	t time.Time
+	t     time.Time
+	Valid bool
 }
 
-func (c *Carbon) MarshalJSON() ([]byte, error) {
+func (c Carbon) MarshalJSON() ([]byte, error) {
 	year, month, day := c.t.Date()
 	hour := c.t.Hour()
 	minute := c.t.Minute()
@@ -39,19 +40,19 @@ func (c *Carbon) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (c *Carbon) String() string {
+func (c Carbon) String() string {
 	return c.t.String()
 }
 
-func (c *Carbon) GetTime() time.Time {
+func (c Carbon) GetTime() time.Time {
 	return c.t
 }
 
-func (c *Carbon) GetTimestamp() int64 {
+func (c Carbon) GetTimestamp() int64 {
 	return c.t.Unix()
 }
 
-func (c *Carbon) Format(format ...string) string {
+func (c Carbon) Format(format ...string) string {
 	var f string
 	if len(format) < 1 {
 		f = DefaultDateTimeFormat
@@ -62,31 +63,31 @@ func (c *Carbon) Format(format ...string) string {
 	return c.t.Format(f)
 }
 
-func (c *Carbon) GetDateTimeString() string {
+func (c Carbon) GetDateTimeString() string {
 	return c.Format(DefaultDateTimeFormat)
 }
 
-func (c *Carbon) GetDateString() string {
+func (c Carbon) GetDateString() string {
 	return c.Format(DefaultDateFormat)
 }
 
 //////////////////////////
 // Minute
 /////////////////////////
-func (c *Carbon) AddMinutes(minutes int) *Carbon {
+func (c Carbon) AddMinutes(minutes int) Carbon {
 	return c.Add(time.Duration(minutes) * time.Minute)
 }
 
-func (c *Carbon) AddMinute() *Carbon {
+func (c Carbon) AddMinute() Carbon {
 	return c.Add(time.Minute)
 }
 
-func (c *Carbon) StartOfMinute() *Carbon {
+func (c Carbon) StartOfMinute() Carbon {
 	c.t = c.t.Truncate(time.Minute)
 	return c
 }
 
-func (c *Carbon) EndOfMinute() *Carbon {
+func (c Carbon) EndOfMinute() Carbon {
 	return c.StartOfMinute().Add(time.Minute - time.Nanosecond)
 }
 
@@ -95,17 +96,17 @@ func (c *Carbon) EndOfMinute() *Carbon {
 /////////////////////////
 
 // AddDays modify day
-func (c *Carbon) AddDays(days int) *Carbon {
+func (c Carbon) AddDays(days int) Carbon {
 	return c.Add(time.Duration(days) * 24 * time.Hour)
 }
 
 // AddDay add one day
-func (c *Carbon) AddDay() *Carbon {
+func (c Carbon) AddDay() Carbon {
 	return c.Add(24 * time.Hour)
 }
 
 // StartOfDay
-func (c *Carbon) StartOfDay() *Carbon {
+func (c Carbon) StartOfDay() Carbon {
 	year, month, day := c.t.Date()
 
 	c.t = time.Date(year, month, day, 0, 0, 0, 0, c.t.Location())
@@ -113,7 +114,7 @@ func (c *Carbon) StartOfDay() *Carbon {
 }
 
 // EndOfDay
-func (c *Carbon) EndOfDay() *Carbon {
+func (c Carbon) EndOfDay() Carbon {
 	year, month, day := c.t.Date()
 
 	c.t = time.Date(year, month, day, 23, 59, 59, int(time.Second-time.Nanosecond), c.t.Location())
@@ -124,15 +125,15 @@ func (c *Carbon) EndOfDay() *Carbon {
 // Week
 /////////////////////////
 
-func (c *Carbon) AddWeeks(weeks int) *Carbon {
+func (c Carbon) AddWeeks(weeks int) Carbon {
 	return c.AddDays(7 * weeks)
 }
 
-func (c *Carbon) AddWeek() *Carbon {
+func (c Carbon) AddWeek() Carbon {
 	return c.AddWeeks(1)
 }
 
-func (c *Carbon) StartOfWeek() *Carbon {
+func (c Carbon) StartOfWeek() Carbon {
 	t := c.StartOfDay()
 	weekday := int(t.t.Weekday())
 
@@ -149,7 +150,7 @@ func (c *Carbon) StartOfWeek() *Carbon {
 	return c
 }
 
-func (c *Carbon) EndOfWeek() *Carbon {
+func (c Carbon) EndOfWeek() Carbon {
 	c.StartOfWeek()
 	c.t = c.t.AddDate(0, 0, 7).Add(-time.Nanosecond)
 	return c
@@ -158,12 +159,12 @@ func (c *Carbon) EndOfWeek() *Carbon {
 //////////////////////////
 // Others
 /////////////////////////
-func (c *Carbon) Add(sec time.Duration) *Carbon {
+func (c Carbon) Add(sec time.Duration) Carbon {
 	c.t = c.t.Add(sec)
 	return c
 }
 
-func (c *Carbon) Clone() *Carbon {
+func (c Carbon) Clone() Carbon {
 	return New(c.t)
 }
 
@@ -194,11 +195,11 @@ func (c Carbon) Value() (driver.Value, error) {
 //  Public functions  //
 ////////////////////////
 
-func Now(tz ...*time.Location) *Carbon {
+func Now(tz ...*time.Location) Carbon {
 	return New(time.Now(), tz...)
 }
 
-func New(t time.Time, tz ...*time.Location) *Carbon {
+func New(t time.Time, tz ...*time.Location) Carbon {
 	if len(tz) > 0 && tz[0] != nil {
 		t.In(tz[0])
 	} else {
@@ -206,12 +207,12 @@ func New(t time.Time, tz ...*time.Location) *Carbon {
 
 	}
 
-	return &Carbon{t}
+	return Carbon{t: t, Valid: true}
 }
 
-func Parse(value string, tz *time.Location, layout ...string) (*Carbon, error) {
+func Parse(value string, tz *time.Location, layout ...string) (Carbon, error) {
 	if len(layout) < 1 {
-		return nil, errors.New("no layout input")
+		return Carbon{}, errors.New("no layout input")
 	}
 
 	for _, v := range layout {
@@ -220,13 +221,13 @@ func Parse(value string, tz *time.Location, layout ...string) (*Carbon, error) {
 			return New(ti, tz), nil
 		}
 	}
-	return nil, errors.New("can not parse value to carbon")
+	return Carbon{}, errors.New("can not parse value to carbon")
 }
 
-func Today() *Carbon {
+func Today() Carbon {
 	return Now().StartOfDay()
 }
 
-func Tomorrow() *Carbon {
+func Tomorrow() Carbon {
 	return Now().AddDay().StartOfDay()
 }
