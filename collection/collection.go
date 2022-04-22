@@ -125,6 +125,16 @@ func SortBy[T interface{}](items []T, fn func(a, b T) bool) []T {
 	return NewSortable(items).SortBy(fn)
 }
 
+func GroupBy[T interface{}, K comparable](items []T, fn func(T) K) map[K][]T {
+	result := make(map[K][]T)
+	for _, item := range items {
+		key := fn(item)
+		result[key] = append(result[key], item)
+	}
+
+	return result
+}
+
 func NewSortable[T interface{}](items []T) *Sortable[T] {
 	data := make([]T, len(items))
 	copy(data, items)

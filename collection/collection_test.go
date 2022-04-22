@@ -1,6 +1,7 @@
 package collection_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/enorith/supports/collection"
@@ -35,14 +36,27 @@ func TestSort(t *testing.T) {
 	t.Log(data, itemsFoo)
 }
 
+func TestGroupBy(t *testing.T) {
+	data := collection.GroupBy(itemsFoo, func(t StructFoo) int {
+		return t.Age % 4
+	})
+
+	for k, v := range data {
+		fmt.Println(k, v)
+	}
+}
+
 func init() {
 	itemsFoo = []StructFoo{
 		{Name: "foo1", Age: 1},
 		{Name: "foo3", Age: 3},
-		{Name: "foo2", Age: 2},
-		{Name: "foo4", Age: 4},
+		{Name: "bar2", Age: 2},
+		{Name: "bar4", Age: 4},
 		{Name: "foo6", Age: 6},
-		{Name: "foo5", Age: 5},
+		{Name: "bar5", Age: 5},
 		{Name: "foo7", Age: 7},
+		{Name: "baz8", Age: 8},
+		{Name: "baz11", Age: 11},
+		{Name: "bar8", Age: 9},
 	}
 }
