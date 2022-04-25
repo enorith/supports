@@ -69,3 +69,7 @@ func Implements(abs interface{}, of reflect.Type) bool {
 	t := TypeOf(abs)
 	return t.Implements(of)
 }
+
+func InterfaceType[T interface{}]() reflect.Type {
+	return reflect.TypeOf((*T)(nil)).Elem()
+}
