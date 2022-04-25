@@ -2,8 +2,6 @@ package collection
 
 import (
 	"sort"
-
-	"golang.org/x/exp/constraints"
 )
 
 type Sortable[T interface{}] struct {
@@ -82,7 +80,7 @@ func Contains[T comparable](items []T, item T) bool {
 	return IndexOf(items, item) != -1
 }
 
-func Reduce[T interface{}, R constraints.Ordered](items []T, fn func(R, T) R, first R) R {
+func Reduce[T interface{}, R interface{}](items []T, fn func(R, T) R, first R) R {
 	result := fn(first, items[0])
 	for _, item := range items[1:] {
 		result = fn(result, item)
