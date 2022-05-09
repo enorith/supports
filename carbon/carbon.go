@@ -224,6 +224,10 @@ func (c *Carbon) Scan(src interface{}) (e error) {
 	return
 }
 
+func (c *Carbon) ScanInput(data []byte) error {
+	return c.Scan(data)
+}
+
 func (c Carbon) Value() (driver.Value, error) {
 	return c.GetDateTimeString(), nil
 }
