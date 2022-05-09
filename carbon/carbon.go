@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"sync"
 	"time"
 )
 
@@ -13,6 +14,21 @@ var (
 	WeekStartDay          = time.Monday
 	Timezone              = time.Local
 )
+
+var (
+	ParseLoyouts = []string{
+		DefaultDateTimeFormat,
+		DefaultDateFormat,
+		time.RFC3339,
+	}
+	mu sync.Mutex
+)
+
+func AddParseLoyouts(layouts ...string) {
+	mu.Lock()
+	defer mu.Unlock()
+	ParseLoyouts = append(ParseLoyouts, layouts...)
+}
 
 type Carbon struct {
 	t     time.Time
@@ -89,6 +105,26 @@ func (c Carbon) StartOfMinute() Carbon {
 
 func (c Carbon) EndOfMinute() Carbon {
 	return c.StartOfMinute().Add(time.Minute - time.Nanosecond)
+}
+
+//////////////////////////
+// Hours
+/////////////////////////
+func (c Carbon) AddHours(hours int) Carbon {
+	return c.Add(time.Duration(hours) * time.Hour)
+}
+
+func (c Carbon) AddHour() Carbon {
+	return c.Add(time.Hour)
+}
+
+func (c Carbon) StartOfHour() Carbon {
+	c.t = c.t.Truncate(time.Hour)
+	return c
+}
+
+func (c Carbon) EndOfHour() Carbon {
+	return c.StartOfHour().Add(time.Hour - time.Nanosecond)
 }
 
 //////////////////////////
@@ -212,7 +248,7 @@ func New(t time.Time, tz ...*time.Location) Carbon {
 
 func Parse(value string, tz *time.Location, layout ...string) (Carbon, error) {
 	if len(layout) < 1 {
-		return Carbon{}, errors.New("no layout input")
+		layout = ParseLoyouts
 	}
 
 	for _, v := range layout {
@@ -221,6 +257,7 @@ func Parse(value string, tz *time.Location, layout ...string) (Carbon, error) {
 			return New(ti, tz), nil
 		}
 	}
+
 	return Carbon{}, errors.New("can not parse value to carbon")
 }
 
