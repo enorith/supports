@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"strings"
 	"sync"
 	"time"
 )
@@ -206,12 +207,12 @@ func (c Carbon) Clone() Carbon {
 
 func (c *Carbon) Scan(src interface{}) (e error) {
 	if bv, ok := src.([]byte); ok {
-		c.t, e = time.Parse(DefaultDateTimeFormat, string(bv))
+		*c, e = Parse(string(bv), Timezone)
 		return
 	}
 
 	if sv, ok := src.(string); ok {
-		c.t, e = time.Parse(DefaultDateTimeFormat, sv)
+		*c, e = Parse(sv, Timezone)
 		return
 	}
 
@@ -247,6 +248,7 @@ func New(t time.Time, tz ...*time.Location) Carbon {
 }
 
 func Parse(value string, tz *time.Location, layout ...string) (Carbon, error) {
+	value = strings.TrimSpace(value)
 	if len(layout) < 1 {
 		layout = ParseLoyouts
 	}
