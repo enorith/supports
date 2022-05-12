@@ -256,9 +256,12 @@ func Parse(value string, tz *time.Location, layout ...string) (Carbon, error) {
 	if len(layout) < 1 {
 		layout = ParseLoyouts
 	}
+	if tz == nil {
+		tz = Timezone
+	}
 
 	for _, v := range layout {
-		ti, err := time.Parse(v, value)
+		ti, err := time.ParseInLocation(v, value, tz)
 		if err == nil {
 			return New(ti, tz), nil
 		}
