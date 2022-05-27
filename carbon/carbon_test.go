@@ -10,11 +10,11 @@ import (
 type TS time.Time
 
 func TestParse(t *testing.T) {
-	c, e := carbon.Parse("2019-01-01T00:02:00Z", nil)
+	c, e := carbon.Parse("2019-01-01 00:02:00", nil)
 	if e != nil {
 		t.Error(e)
 	}
-	t.Log(c.GetDateTimeString())
+	t.Log(c.GetTime())
 }
 
 func TestOffset(t *testing.T) {
