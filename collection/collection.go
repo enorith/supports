@@ -46,7 +46,7 @@ func (s *Sortable[T]) SortBy(sortFn func(a, b T) bool) []T {
 }
 
 func Map[T interface{}, R interface{}](items []T, fn func(T) R) []R {
-	result := make([]R, len(items))
+	result := make([]R, 0)
 	for _, item := range items {
 		result = append(result, fn(item))
 	}
@@ -128,6 +128,20 @@ func GroupBy[T interface{}, K comparable](items []T, fn func(T) K) map[K][]T {
 	for _, item := range items {
 		key := fn(item)
 		result[key] = append(result[key], item)
+	}
+
+	return result
+}
+
+func Unique[T interface{}, K comparable](items []T, fn func(T) K) []T {
+	result := make([]T, 0)
+	seen := make(map[K]struct{})
+	for _, item := range items {
+		key := fn(item)
+		if _, ok := seen[key]; !ok {
+			result = append(result, item)
+			seen[key] = struct{}{}
+		}
 	}
 
 	return result

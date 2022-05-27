@@ -46,6 +46,27 @@ func TestGroupBy(t *testing.T) {
 	}
 }
 
+func TestMap(t *testing.T) {
+	data := collection.Map(itemsFoo, func(t StructFoo) StructFoo {
+		t.Age += 1
+		return t
+	})
+
+	t.Log(data)
+}
+
+func TestUnique(t *testing.T) {
+	data := collection.SortBy(itemsFoo, func(a, b StructFoo) bool {
+		return a.Age < b.Age
+	})
+
+	data = collection.Unique(data, func(t StructFoo) int {
+		return t.Age
+	})
+
+	t.Log(data)
+}
+
 func init() {
 	itemsFoo = []StructFoo{
 		{Name: "foo1", Age: 1},
@@ -58,5 +79,8 @@ func init() {
 		{Name: "baz8", Age: 8},
 		{Name: "baz11", Age: 11},
 		{Name: "bar8", Age: 9},
+		{Name: "bar12", Age: 10},
+		{Name: "bar13", Age: 9},
+		{Name: "bar14", Age: 9},
 	}
 }
