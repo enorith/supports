@@ -123,6 +123,16 @@ func Every[T interface{}](items []T, fn func(T) bool) bool {
 	return true
 }
 
+func Some[T interface{}](items []T, fn func(T) bool) bool {
+	for _, item := range items {
+		if fn(item) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func SortBy[T interface{}](items []T, fn func(a, b T) bool) []T {
 	return NewSortable(items).SortBy(fn)
 }
@@ -132,6 +142,15 @@ func GroupBy[T interface{}, K comparable](items []T, fn func(T) K) map[K][]T {
 	for _, item := range items {
 		key := fn(item)
 		result[key] = append(result[key], item)
+	}
+
+	return result
+}
+
+func Pluck[T any, V any](items []T, fn func(T) V) []V {
+	result := make([]V, 0)
+	for _, item := range items {
+		result = append(result, fn(item))
 	}
 
 	return result
@@ -149,6 +168,13 @@ func Unique[T interface{}, K comparable](items []T, fn func(T) K) []T {
 	}
 
 	return result
+}
+
+// Reverse reverses the order of the collection.
+func Reverse[T any](items []T) {
+	for i, j := 0, len(items)-1; i < j; i, j = i+1, j-1 {
+		items[i], items[j] = items[j], items[i]
+	}
 }
 
 func NewSortable[T interface{}](items []T) *Sortable[T] {

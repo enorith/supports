@@ -1,6 +1,6 @@
 module github.com/enorith/supports
 
-go 1.18
+go 1.20
 
 require (
 	github.com/enorith/http v1.2.3
