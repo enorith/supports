@@ -19,6 +19,41 @@ func (c Datetime) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf(`"%s"`, c.GetDateTimeString())), nil
 }
 
+func (c *Datetime) UnmarshalJSON(row []byte) error {
+	s := strings.Trim(string(row), "\"")
+	cb, e := carbon.Parse(s, carbon.Timezone)
+	if e == nil {
+		*c = Datetime{Carbon: cb}
+	}
+	return e
+}
+
+func (c Datetime) OfDate() Date {
+	return Date(c)
+}
+
+type Date struct {
+	carbon.Carbon
+}
+
+func (d *Date) UnmarshalJSON(row []byte) error {
+	s := strings.Trim(string(row), "\"")
+	t, e := time.Parse("2006-01-02", s)
+	if e != nil {
+		return e
+	}
+	*d = Date{Carbon: carbon.New(t)}
+	return nil
+}
+
+func (d Date) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, d.GetDateString())), nil
+}
+
+func (d Date) Value() (driver.Value, error) {
+	return d.GetDateString(), nil
+}
+
 type WithTimestamps struct {
 	CreatedAt Datetime  `gorm:"column:created_at;autoCreateTime;type:timestamp null" json:"created_at"`
 	UpdatedAt time.Time `gorm:"column:updated_at;autoUpdateTime;type:timestamp null" json:"updated_at"`
