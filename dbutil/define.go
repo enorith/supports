@@ -21,11 +21,18 @@ func (c Datetime) MarshalJSON() ([]byte, error) {
 
 func (c *Datetime) UnmarshalJSON(row []byte) error {
 	s := strings.Trim(string(row), "\"")
+	if s == "" || s == "0001-01-01 00:00:00" {
+		return nil
+	}
 	cb, e := carbon.Parse(s, carbon.Timezone)
 	if e == nil {
 		*c = Datetime{Carbon: cb}
 	}
 	return e
+}
+
+func (c *Datetime) ScanInput(data []byte) error {
+	return c.UnmarshalJSON(data)
 }
 
 func (c Datetime) OfDate() Date {
@@ -38,6 +45,9 @@ type Date struct {
 
 func (d *Date) UnmarshalJSON(row []byte) error {
 	s := strings.Trim(string(row), "\"")
+	if s == "" || s == "0000-00-00" {
+		return nil
+	}
 	t, e := time.Parse("2006-01-02", s)
 	if e != nil {
 		return e
@@ -52,6 +62,10 @@ func (d Date) MarshalJSON() ([]byte, error) {
 
 func (d Date) Value() (driver.Value, error) {
 	return d.GetDateString(), nil
+}
+
+func (d *Date) ScanInput(data []byte) error {
+	return d.UnmarshalJSON(data)
 }
 
 type WithTimestamps struct {
