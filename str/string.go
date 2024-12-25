@@ -1,9 +1,10 @@
 package str
 
 import (
-	"github.com/enorith/supports/byt"
 	"strings"
 	"unsafe"
+
+	"github.com/enorith/supports/byt"
 )
 
 func Contains(haystack string, needles ...string) bool {
@@ -32,15 +33,15 @@ func Duplicate(str string, times int) []string {
 	return value
 }
 
-func RandString(n int) string {
-	b := byt.RandBytes(n)
+func RandString(n int, seeds ...string) string {
+	b := byt.RandBytes(n, seeds...)
 
 	return *(*string)(unsafe.Pointer(&b))
 }
 
 func ReplaceVar(str string, vars map[string]string) string {
 	for k, v := range vars {
-		str = strings.ReplaceAll(str, ":" + k, v)
+		str = strings.ReplaceAll(str, ":"+k, v)
 	}
 
 	return str

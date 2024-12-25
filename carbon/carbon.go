@@ -88,9 +88,9 @@ func (c Carbon) GetDateString() string {
 	return c.Format(DefaultDateFormat)
 }
 
-//////////////////////////
+// ////////////////////////
 // Minute
-/////////////////////////
+// ///////////////////////
 func (c Carbon) AddMinutes(minutes int) Carbon {
 	return c.Add(time.Duration(minutes) * time.Minute)
 }
@@ -108,9 +108,9 @@ func (c Carbon) EndOfMinute() Carbon {
 	return c.StartOfMinute().Add(time.Minute - time.Nanosecond)
 }
 
-//////////////////////////
+// ////////////////////////
 // Hours
-/////////////////////////
+// ///////////////////////
 func (c Carbon) AddHours(hours int) Carbon {
 	return c.Add(time.Duration(hours) * time.Hour)
 }
@@ -183,19 +183,50 @@ func (c Carbon) StartOfWeek() Carbon {
 			weekday = weekday - weekStartDayInt
 		}
 	}
-	c.t = c.t.AddDate(0, 0, -weekday)
+	c.t = t.t.AddDate(0, 0, -weekday)
 	return c
 }
 
 func (c Carbon) EndOfWeek() Carbon {
-	c.StartOfWeek()
-	c.t = c.t.AddDate(0, 0, 7).Add(-time.Nanosecond)
+
+	c.t = c.StartOfWeek().t.AddDate(0, 0, 7).Add(-time.Nanosecond)
 	return c
 }
 
-//////////////////////////
+func (c Carbon) AddMonths(months int) Carbon {
+	return c.Add(time.Duration(months) * 30 * 24 * time.Hour)
+}
+
+func (c Carbon) StartOfMonth() Carbon {
+	year, month, _ := c.t.Date()
+	c.t = time.Date(year, month, 1, 0, 0, 0, 0, c.t.Location())
+	return c
+}
+
+func (c Carbon) EndOfMonth() Carbon {
+	c.t = c.StartOfMonth().t.AddDate(0, 1, 0).Add(-time.Nanosecond)
+	return c
+}
+
+func (c Carbon) AddYears(years int) Carbon {
+	return c.Add(time.Duration(years) * 365 * 24 * time.Hour)
+}
+
+func (c Carbon) StartOfYear() Carbon {
+	year, _, _ := c.t.Date()
+	c.t = time.Date(year, 1, 1, 0, 0, 0, 0, c.t.Location())
+	return c
+}
+
+func (c Carbon) EndOfYear() Carbon {
+
+	c.t = c.StartOfYear().t.AddDate(1, 0, 0).Add(-time.Nanosecond)
+	return c
+}
+
+// ////////////////////////
 // Others
-/////////////////////////
+// ///////////////////////
 func (c Carbon) Add(sec time.Duration) Carbon {
 	c.t = c.t.Add(sec)
 	return c

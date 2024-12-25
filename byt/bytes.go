@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"math/rand"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -13,6 +14,8 @@ const (
 	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 const letterSeeds = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=_+';./?><`~!@#$%^&*()"
+
+var mu sync.RWMutex
 
 func Contains(haystack []byte, needles ...[]byte) bool {
 	for _, n := range needles {
@@ -24,12 +27,12 @@ func Contains(haystack []byte, needles ...[]byte) bool {
 	return false
 }
 
-//StartWith alias of bytes.HasPrefix
+// StartWith alias of bytes.HasPrefix
 func StartWith(haystack []byte, needle []byte) bool {
 	return bytes.HasPrefix(haystack, needle)
 }
 
-//EndWith alias of bytes.HasSuffix
+// EndWith alias of bytes.HasSuffix
 func EndWith(haystack []byte, needle []byte) bool {
 	return bytes.HasSuffix(haystack, needle)
 }
@@ -44,14 +47,21 @@ func Duplicate(b []byte, times int) [][]byte {
 
 var src = rand.NewSource(time.Now().UnixNano())
 
-func RandBytes(n int) []byte {
+func RandBytes(n int, seeds ...string) []byte {
+	mu.Lock()
+	defer mu.Unlock()
+	seed := letterSeeds
+	if len(seeds) > 0 {
+		seed = seeds[0]
+	}
+
 	b := make([]byte, n)
 	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
 		if remain == 0 {
 			cache, remain = src.Int63(), letterIdxMax
 		}
-		if idx := int(cache & letterIdxMask); idx < len(letterSeeds) {
-			b[i] = letterSeeds[idx]
+		if idx := int(cache & letterIdxMask); idx < len(seed) {
+			b[i] = seed[idx]
 			i--
 		}
 		cache >>= letterIdxBits

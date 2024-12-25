@@ -21,7 +21,12 @@ func TestOffset(t *testing.T) {
 	c := carbon.Now()
 	t.Log(c.AddHours(1))
 	t.Log(c.AddMinutes(2))
+	t.Log("===========")
 	t.Log(c.StartOfHour(), c.EndOfHour())
+	t.Log(c.StartOfDay(), c.EndOfDay())
+	t.Log(c.StartOfMonth(), c.EndOfMonth())
+	t.Log(c.StartOfYear(), c.EndOfYear())
+	t.Log(c.StartOfWeek(), c.EndOfWeek())
 }
 
 func TestScan(t *testing.T) {
